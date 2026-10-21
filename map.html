@@ -14,88 +14,98 @@
     
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
-        #map { height: 480px; width: 100%; z-index: 10; border-radius: 0.75rem; }
+        #map { height: 320px; width: 100%; z-index: 10; border-radius: 0.75rem; }
+        @media (min-width: 640px) {
+            #map { height: 420px; }
+        }
+        @media (min-width: 1024px) {
+            #map { height: 480px; }
+        }
     </style>
 </head>
 <body class="bg-stone-100 text-stone-800 antialiased min-h-screen flex flex-col">
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-white border-b border-stone-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-50 shadow-sm">
-        <a href="index.html" class="flex items-center space-x-2 cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-stone-900 flex items-center justify-center text-white font-bold text-sm">
-                <i class="fa-solid fa-compass"></i>
-            </div>
-            <span class="font-bold text-stone-900 text-base">Explorer</span>
-        </a>
+    <!-- Top Navigation Bar (Mobile Responsive Layout) -->
+    <header class="bg-white border-b border-stone-200 px-4 sm:px-6 py-3 flex flex-col sm:flex-row items-center justify-between sticky top-0 z-50 shadow-sm gap-2 sm:gap-4">
         
-        <!-- Search Bar Form with Suggestions Dropdown -->
-        <div class="flex items-center max-w-md w-full mx-4 relative">
+        <div class="flex items-center justify-between w-full sm:w-auto">
+            <a href="index.html" class="flex items-center space-x-2 cursor-pointer">
+                <div class="w-8 h-8 rounded-lg bg-stone-900 flex items-center justify-center text-white font-bold text-sm">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <span class="font-bold text-stone-900 text-base">Explorer</span>
+            </a>
+            <span class="text-[10px] text-stone-400 font-medium sm:hidden">GitHub Pages</span>
+        </div>
+        
+        <!-- Search Bar Form with Mobile Autocomplete Dropdown -->
+        <div class="flex items-center w-full sm:max-w-md relative">
             <div class="relative w-full">
-                <input type="text" id="search-input" placeholder="Search city, country, or landmark..." 
-                    class="w-full pl-10 pr-4 py-2 bg-stone-100 border border-stone-200 rounded-xl text-sm focus:outline-none focus:bg-white focus:border-stone-400 transition"
+                <input type="text" id="search-input" placeholder="Search city, country, landmark..." 
+                    class="w-full pl-9 pr-3 py-2 bg-stone-100 border border-stone-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:bg-white focus:border-stone-400 transition"
                     autocomplete="off"
                     oninput="handleInputTyping()"
                     onkeypress="if(event.key === 'Enter') { hideSuggestions(); handleSearch(); }">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-stone-400 text-xs"></i>
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 sm:top-3 text-stone-400 text-xs"></i>
                 
                 <!-- Suggestions Dropdown Box -->
-                <div id="suggestions-box" class="hidden absolute left-0 right-0 mt-1 bg-white border border-stone-200 rounded-xl shadow-lg max-h-60 overflow-y-auto z-50"></div>
+                <div id="suggestions-box" class="hidden absolute left-0 right-0 mt-1 bg-white border border-stone-200 rounded-xl shadow-lg max-h-56 overflow-y-auto z-50"></div>
             </div>
-            <button onclick="hideSuggestions(); handleSearch();" class="ml-2 bg-stone-900 hover:bg-stone-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition">
+            <button onclick="hideSuggestions(); handleSearch();" class="ml-2 bg-stone-900 hover:bg-stone-800 text-white px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition shrink-0">
                 Search
             </button>
         </div>
 
-        <div class="text-xs text-stone-500 font-medium hidden sm:block">GitHub Pages Ready</div>
+        <div class="text-xs text-stone-500 font-medium hidden md:block">GitHub Pages Ready</div>
     </header>
 
     <!-- Full-Width Main Content Area -->
-    <main class="flex-1 w-full px-6 py-6 space-y-8">
+    <main class="flex-1 w-full px-4 sm:px-6 py-4 sm:py-6 space-y-6 sm:space-y-8">
         
         <!-- Initial State Banner -->
-        <div id="empty-state" class="text-center py-24 px-4 space-y-3 bg-white rounded-3xl border border-stone-200 shadow-sm my-8 max-w-3xl mx-auto">
-            <div class="w-14 h-14 bg-stone-100 rounded-full flex items-center justify-center mx-auto text-stone-400">
-                <i class="fa-solid fa-earth-americas text-2xl"></i>
+        <div id="empty-state" class="text-center py-16 sm:py-24 px-4 space-y-3 bg-white rounded-3xl border border-stone-200 shadow-sm my-4 sm:my-8 max-w-3xl mx-auto">
+            <div class="w-12 sm:w-14 h-12 sm:h-14 bg-stone-100 rounded-full flex items-center justify-center mx-auto text-stone-400">
+                <i class="fa-solid fa-earth-americas text-xl sm:text-2xl"></i>
             </div>
-            <h3 class="font-bold text-stone-800 text-lg">Select a Destination</h3>
+            <h3 class="font-bold text-stone-800 text-base sm:text-lg">Select a Destination</h3>
             <p class="text-xs text-stone-500 max-w-sm mx-auto">Use the search bar above to explore comprehensive destination insights, live weather, currency info, and large photo galleries.</p>
         </div>
 
         <!-- Destination Content -->
-        <div id="destination-content" class="hidden space-y-8">
+        <div id="destination-content" class="hidden space-y-6 sm:space-y-8">
             
-            <!-- Top Section: 5 Column Details + 7 Column Map -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <!-- Top Section: Stacked on Mobile, Side-by-Side on Desktop -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-stretch">
                 
                 <!-- Left Details Box -->
-                <div class="lg:col-span-5 bg-white p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between space-y-4">
+                <div class="lg:col-span-5 bg-white p-4 sm:p-6 rounded-2xl border border-stone-200 shadow-sm flex flex-col justify-between space-y-4">
                     <div>
-                        <span id="dest-country" class="text-xs font-semibold uppercase tracking-wider text-stone-400">Country</span>
-                        <h2 id="dest-title" class="text-3xl font-extrabold text-stone-900 mt-0.5">Destination Name</h2>
+                        <span id="dest-country" class="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-stone-400">Country</span>
+                        <h2 id="dest-title" class="text-2xl sm:text-3xl font-extrabold text-stone-900 mt-0.5">Destination Name</h2>
                     </div>
 
                     <!-- Weather & Currency Cards Row -->
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-stone-50 rounded-xl p-3.5 border border-stone-200/80 flex items-center justify-between">
+                    <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
+                        <div class="bg-stone-50 rounded-xl p-3 sm:p-3.5 border border-stone-200/80 flex items-center justify-between">
                             <div>
-                                <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Weather</span>
-                                <div class="flex items-baseline space-x-1.5 mt-0.5">
-                                    <span id="weather-temp" class="text-xl font-bold text-stone-900">--°C</span>
+                                <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-stone-400">Weather</span>
+                                <div class="flex items-baseline space-x-1 mt-0.5">
+                                    <span id="weather-temp" class="text-lg sm:text-xl font-bold text-stone-900">--°C</span>
                                 </div>
-                                <span id="weather-condition" class="text-[11px] text-stone-600 font-medium">Loading...</span>
+                                <span id="weather-condition" class="text-[10px] sm:text-[11px] text-stone-600 font-medium truncate block max-w-[90px]">Loading...</span>
                             </div>
-                            <div class="w-9 h-9 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-amber-500 text-sm">
+                            <div class="w-8 sm:w-9 h-8 sm:h-9 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-amber-500 text-xs sm:text-sm shrink-0">
                                 <i class="fa-solid fa-cloud-sun"></i>
                             </div>
                         </div>
 
-                        <div class="bg-stone-50 rounded-xl p-3.5 border border-stone-200/80 flex items-center justify-between">
+                        <div class="bg-stone-50 rounded-xl p-3 sm:p-3.5 border border-stone-200/80 flex items-center justify-between">
                             <div>
-                                <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Currency</span>
-                                <div id="currency-name" class="text-xs font-bold text-stone-900 mt-0.5 truncate max-w-[100px]">--</div>
-                                <span id="currency-code" class="text-[11px] text-stone-600 font-medium">--</span>
+                                <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-stone-400">Currency</span>
+                                <div id="currency-name" class="text-xs font-bold text-stone-900 mt-0.5 truncate max-w-[80px] sm:max-w-[100px]">--</div>
+                                <span id="currency-code" class="text-[10px] sm:text-[11px] text-stone-600 font-medium">--</span>
                             </div>
-                            <div class="w-9 h-9 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-emerald-600 text-sm">
+                            <div class="w-8 sm:w-9 h-8 sm:h-9 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-emerald-600 text-xs sm:text-sm shrink-0">
                                 <i class="fa-solid fa-wallet"></i>
                             </div>
                         </div>
@@ -103,62 +113,62 @@
 
                     <!-- Wikipedia Summary -->
                     <div class="space-y-1.5">
-                        <h4 class="text-[11px] font-semibold uppercase tracking-wider text-stone-400">Overview</h4>
+                        <h4 class="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-stone-400">Overview</h4>
                         <p id="dest-summary" class="text-xs text-stone-600 leading-relaxed max-h-36 overflow-y-auto pr-1">
                             Summary description goes here...
                         </p>
                     </div>
 
                     <!-- Coordinates -->
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-stone-50 p-3 rounded-xl border border-stone-200/80">
-                            <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Latitude</span>
+                    <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
+                        <div class="bg-stone-50 p-2.5 sm:p-3 rounded-xl border border-stone-200/80">
+                            <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-stone-400">Latitude</span>
                             <p id="fact-lat" class="text-xs font-bold text-stone-800 mt-0.5">--</p>
                         </div>
-                        <div class="bg-stone-50 p-3 rounded-xl border border-stone-200/80">
-                            <span class="text-[10px] font-semibold uppercase tracking-wider text-stone-400">Longitude</span>
+                        <div class="bg-stone-50 p-2.5 sm:p-3 rounded-xl border border-stone-200/80">
+                            <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-stone-400">Longitude</span>
                             <p id="fact-lon" class="text-xs font-bold text-stone-800 mt-0.5">--</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Right Map Box -->
-                <div class="lg:col-span-7 bg-white p-3 rounded-2xl border border-stone-200 shadow-sm flex flex-col">
-                    <div class="text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2 px-2">Interactive Map</div>
+                <div class="lg:col-span-7 bg-white p-2.5 sm:p-3 rounded-2xl border border-stone-200 shadow-sm flex flex-col">
+                    <div class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-stone-400 mb-2 px-1 sm:px-2">Interactive Map</div>
                     <div id="map" class="flex-1"></div>
                 </div>
 
             </div>
 
             <!-- Bottom Gallery Section -->
-            <div class="space-y-4 pt-4 border-t border-stone-200">
+            <div class="space-y-3 sm:space-y-4 pt-4 border-t border-stone-200">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-bold uppercase tracking-wider text-stone-700">Destination Gallery & Photography</h3>
-                    <span class="text-xs text-stone-400">High-resolution views</span>
+                    <h3 class="text-xs sm:text-sm font-bold uppercase tracking-wider text-stone-700">Destination Gallery</h3>
+                    <span class="text-[10px] sm:text-xs text-stone-400">High-resolution views</span>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="space-y-1.5">
-                        <span class="text-xs text-stone-500 font-medium">Main Landmark</span>
-                        <div class="rounded-xl overflow-hidden border border-stone-200 h-64 bg-white shadow-sm">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="space-y-1">
+                        <span class="text-[11px] sm:text-xs text-stone-500 font-medium">Main Landmark</span>
+                        <div class="rounded-xl overflow-hidden border border-stone-200 h-48 sm:h-64 bg-white shadow-sm">
                             <img id="dest-image" src="" alt="Main Photo" class="w-full h-full object-cover">
                         </div>
                     </div>
-                    <div class="space-y-1.5">
-                        <span class="text-xs text-stone-500 font-medium">Gallery View 1</span>
-                        <div class="rounded-xl overflow-hidden border border-stone-200 h-64 bg-white shadow-sm">
+                    <div class="space-y-1">
+                        <span class="text-[11px] sm:text-xs text-stone-500 font-medium">Gallery View 1</span>
+                        <div class="rounded-xl overflow-hidden border border-stone-200 h-48 sm:h-64 bg-white shadow-sm">
                             <img id="gallery-img-1" src="" alt="Gallery Photo 1" class="w-full h-full object-cover">
                         </div>
                     </div>
-                    <div class="space-y-1.5">
-                        <span class="text-xs text-stone-500 font-medium">Gallery View 2</span>
-                        <div class="rounded-xl overflow-hidden border border-stone-200 h-64 bg-white shadow-sm">
+                    <div class="space-y-1">
+                        <span class="text-[11px] sm:text-xs text-stone-500 font-medium">Gallery View 2</span>
+                        <div class="rounded-xl overflow-hidden border border-stone-200 h-48 sm:h-64 bg-white shadow-sm">
                             <img id="gallery-img-2" src="" alt="Gallery Photo 2" class="w-full h-full object-cover">
                         </div>
                     </div>
-                    <div class="space-y-1.5">
-                        <span class="text-xs text-stone-500 font-medium">Gallery View 3</span>
-                        <div class="rounded-xl overflow-hidden border border-stone-200 h-64 bg-white shadow-sm">
+                    <div class="space-y-1">
+                        <span class="text-[11px] sm:text-xs text-stone-500 font-medium">Gallery View 3</span>
+                        <div class="rounded-xl overflow-hidden border border-stone-200 h-48 sm:h-64 bg-white shadow-sm">
                             <img id="gallery-img-3" src="" alt="Gallery Photo 3" class="w-full h-full object-cover">
                         </div>
                     </div>
@@ -209,15 +219,17 @@
                 handleSearch();
             }
 
-            // Hide suggestions when clicking outside
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('#search-input') && !e.target.closest('#suggestions-box')) {
                     hideSuggestions();
                 }
             });
+            
+            window.addEventListener('resize', () => {
+                if (map) map.invalidateSize();
+            });
         });
 
-        // Debounced Live Typing Suggestion Fetcher
         function handleInputTyping() {
             clearTimeout(debounceTimer);
             const query = document.getElementById('search-input').value.trim();
@@ -237,7 +249,7 @@
                         box.innerHTML = '';
                         data.forEach(item => {
                             const div = document.createElement('div');
-                            div.className = "px-4 py-2.5 text-xs text-stone-700 hover:bg-stone-100 cursor-pointer truncate border-b border-stone-100 last:border-none";
+                            div.className = "px-3 sm:px-4 py-2.5 text-xs text-stone-700 hover:bg-stone-100 cursor-pointer truncate border-b border-stone-100 last:border-none";
                             div.innerHTML = `<i class="fa-solid fa-location-dot text-stone-400 mr-2"></i>${item.display_name}`;
                             div.onclick = () => {
                                 document.getElementById('search-input').value = item.display_name.split(',')[0];
@@ -285,7 +297,7 @@
                 }
 
                 map.setView([lat, lon], 11);
-                setTimeout(() => { map.invalidateSize(); }, 200);
+                setTimeout(() => { map.invalidateSize(); }, 250);
 
                 if (marker) {
                     marker.setLatLng([lat, lon]);
@@ -294,7 +306,7 @@
                 }
                 marker.bindPopup(`<b>${place.name}</b>`).openPopup();
 
-                // 1. Weather API
+                // Weather API
                 const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
                 const weatherData = await weatherRes.json();
                 
@@ -303,10 +315,10 @@
                     document.getElementById('weather-condition').innerText = getWeatherDescription(weatherData.current_weather.weathercode);
                 }
 
-                // 2. Currency Information lookup
+                // Currency Information
                 fetchCurrencyData(countryName);
 
-                // 3. Wikipedia Summary & Dynamic Photos
+                // Wikipedia Summary & Dynamic Photos
                 fetchWikiData(place.name, query);
 
                 document.getElementById('dest-title').innerText = place.name;
